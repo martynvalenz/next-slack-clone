@@ -13,23 +13,27 @@ import { useCreateWorkspaceModal } from "../store/use-create-workspace-modal"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useCreateWorkspace } from "../api/use-create-workspace"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const CreateWorkspaceModal = () => {
+  const router = useRouter()
   const [open, setOpen] = useCreateWorkspaceModal()
   const [name, setName] = useState('')
   const {mutate, isPending, isError, isSuccess, data, error} = useCreateWorkspace()
 
   const handleClose = () => {
     setOpen(false)
-
+    setName('')
   }
 
   const handleSubmit = (e:FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     mutate({name}, {
-      onSuccess(data) {
-        console.log('Workspace created', data)
-        setOpen(false)
+      onSuccess(id) {
+        router.push(`/workspace/${id}`)
+        toast.success('Workspace created successfully')
+        handleClose()
       },
     })
   }
