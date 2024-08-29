@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useCurrentUser } from "@/hooks/useCurrentUser"
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser"
 import { useAuthActions } from "@convex-dev/auth/react"
 import { Loader2, LogOut } from "lucide-react"
 
