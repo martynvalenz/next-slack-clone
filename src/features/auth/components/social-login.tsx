@@ -3,14 +3,27 @@ import { FaGithub } from 'react-icons/fa'
 import { FcGoogle } from 'react-icons/fc'
 import { useAuthActions } from "@convex-dev/auth/react";
 
-const SocialLogin = () => {
+type Props = {
+  pending:boolean
+  setPending:(pending:boolean) => void
+}
+
+const SocialLogin = ({
+  pending,
+  setPending
+}:Props) => {
   const { signIn } = useAuthActions();
+
+  const onProviderSignIn = (provider:'github'|'google') => {
+    setPending(true)
+    signIn(provider)
+  }
 
   return (
     <div className='flex flex-col space-y-2.5'>
       <Button 
-        disabled={false}
-        onClick={() => void signIn("google")}
+        disabled={pending}
+        onClick={() => onProviderSignIn('google')}
         className='w-full relative'
         size="lg"
         variant="outline"
@@ -19,8 +32,8 @@ const SocialLogin = () => {
         Continue with Google
       </Button>
       <Button 
-        disabled={false}
-        onClick={() => void signIn("github")}
+        disabled={pending}
+        onClick={() => onProviderSignIn('github')}
         className='w-full relative'
         size="lg"
         variant="outline"

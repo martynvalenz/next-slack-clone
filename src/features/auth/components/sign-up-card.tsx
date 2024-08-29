@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { type SignInFlow } from '../types'
-import { useState } from 'react'
+import { type FormEvent, useState } from 'react'
 import SocialLogin from './social-login'
+import { useAuthActions } from '@convex-dev/auth/react'
+import { TriangleAlert } from 'lucide-react'
 
 interface Props {
   setState:(state:SignInFlow) => void
@@ -13,9 +15,22 @@ interface Props {
 const SignUpCard = ({
   setState
 }:Props) => {
+  const { signIn } = useAuthActions();
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [pending,setPending] = useState(false)
+
+  const onProviderSignUp = (e:FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setPending(true)
+    signIn('password', { name, email, password, flow: 'signUp' })
+    .catch(() => {
+      setError('Something went wrong')
+      setPending(false)
+    })
+  }
   
   return (
     <Card className='w-full h-full p-8'>
@@ -25,10 +40,23 @@ const SignUpCard = ({
           Use your email or another service to create an account
         </CardDescription>
       </CardHeader>
+      {!!error && (
+        <div className='bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6'>
+          <TriangleAlert className='size-4' />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className='space-y-5 px-0 pb-0'>
-        <form action="" className='flex flex-col space-y-2.5'>
+        <form onSubmit={onProviderSignUp} className='flex flex-col space-y-2.5'>
           <Input 
-            disabled={false}
+            disabled={pending}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder='Full name'
+            required
+          />
+          <Input 
+            disabled={pending}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder='Email'
@@ -36,27 +64,22 @@ const SignUpCard = ({
             required
           />
           <Input 
-            disabled={false}
+            disabled={pending}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder='Password'
             type='password'
             required
           />
-          <Input 
-            disabled={false}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder='Confirm Password'
-            type='password'
-            required
-          />
-          <Button type='submit' className='w-full' size="lg" disabled={false}>
+          <Button type='submit' className='w-full' size="lg" disabled={pending}>
             Sign Up
           </Button>
         </form>
         <Separator />
-        <SocialLogin />
+        <SocialLogin 
+          pending={pending}
+          setPending={setPending}
+        />
         <p className='text-xs text-muted-foreground'>
           Already have an account? <span className="text-sky-700 hover:underline cursor-pointer" onClick={() => setState('signIn')}>Sign In</span>
         </p>
