@@ -7,12 +7,15 @@ import WorkspaceSidebarHeader from './WorkspaceSidebarHeader'
 import SidebarItem from './SidebarItem'
 import { useGetChannels } from '@/features/channels/api/use-get-channels'
 import WorkspaceSection from './WorkspaceSection'
+import { useGetMembers } from '@/features/members/api/use-get-members'
+import UserItem from './UserItem'
 
 const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId()
   const {data:member, isLoading:memberLoading} = useCurrentMember({workspaceId})
   const {data:workspace, isLoading:workspaceLoading} = useGetWorkspace({id:workspaceId})
   const {data:channels, isLoading:channelsLoading} = useGetChannels({workspaceId})
+  const {data:members, isLoading:membersLoading} = useGetMembers({workspaceId})
 
   if(memberLoading || workspaceLoading) return (
     <div className='flex flex-col bg-[#5e2c5f] h-full items-center justify-center'>
@@ -54,6 +57,23 @@ const WorkspaceSidebar = () => {
               label={channel.name}
               icon={HashIcon}
               id={channel._id}
+            />
+          ))
+        }
+      </WorkspaceSection>
+      <WorkspaceSection
+        label="Members"
+        hint="New Member"
+        onNew={() => {}}
+      >
+        {
+          members?.map(item => (
+            <UserItem
+              key={item._id}
+              id={item._id}
+              label={item.user.name || ''}
+              image={item.user.image}
+              // TODO: variant={member._id == item._id ? 'active' : 'default'}
             />
           ))
         }
