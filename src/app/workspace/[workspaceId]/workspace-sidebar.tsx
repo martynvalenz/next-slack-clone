@@ -1,15 +1,18 @@
 import { useCurrentMember } from '@/features/members/api/use-current-meber'
 import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace'
 import { useWorkspaceId } from '@/hooks/useWorkspaceId'
-import { AlertTriangle, Loader2, MessageSquareText, SendHorizonal } from 'lucide-react'
+import { AlertTriangle, HashIcon, Loader2, MessageSquareText, SendHorizonal } from 'lucide-react'
 import React from 'react'
 import WorkspaceSidebarHeader from './WorkspaceSidebarHeader'
 import SidebarItem from './SidebarItem'
+import { useGetChannels } from '@/features/channels/api/use-get-channels'
+import WorkspaceSection from './WorkspaceSection'
 
 const WorkspaceSidebar = () => {
   const workspaceId = useWorkspaceId()
   const {data:member, isLoading:memberLoading} = useCurrentMember({workspaceId})
   const {data:workspace, isLoading:workspaceLoading} = useGetWorkspace({id:workspaceId})
+  const {data:channels, isLoading:channelsLoading} = useGetChannels({workspaceId})
 
   if(memberLoading || workspaceLoading) return (
     <div className='flex flex-col bg-[#5e2c5f] h-full items-center justify-center'>
@@ -39,6 +42,22 @@ const WorkspaceSidebar = () => {
           id="drafts"
         />
       </div>
+      <WorkspaceSection
+        label="Channels"
+        hint="New channel"
+        onNew={() => {}}
+      >
+        {
+          channels?.map(channel => (
+            <SidebarItem
+              key={channel._id}
+              label={channel.name}
+              icon={HashIcon}
+              id={channel._id}
+            />
+          ))
+        }
+      </WorkspaceSection>
     </div>
   )
 }
