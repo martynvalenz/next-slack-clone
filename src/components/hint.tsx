@@ -23,7 +23,7 @@ const Hint = ({
 }:HintProps) => {
   return (
     <TooltipProvider>
-      <Tooltip delayDuration={1000}>
+      <Tooltip delayDuration={500}>
         <TooltipTrigger asChild>
           {children}
         </TooltipTrigger>
