@@ -20,6 +20,7 @@ import { useRemovChannel } from '@/features/channels/api/use-remove-channel'
 import { useConfirm } from '@/hooks/useConfirm'
 import { useRouter } from 'next/navigation'
 import { useWorkspaceId } from '@/hooks/useWorkspaceId'
+import { useCurrentMember } from '@/features/members/api/use-current-meber'
 
 interface HeaderProps {
   title: string
@@ -37,6 +38,14 @@ const Header = ({
   )
   const channelId = useChannelId()
   const workspaceId = useWorkspaceId()
+  const {data:member} = useCurrentMember({workspaceId})
+
+  const isAdmin = member?.role === 'admin'
+  const handleEditOpen = (value:boolean) => {
+    if(isAdmin) {
+      setEditOpen(value)
+    }
+  }
 
   const {
     mutate: updateChannel,
@@ -107,12 +116,12 @@ const Header = ({
             </DialogTitle>
           </DialogHeader>
           <div className='px-4 pb-4 flex flex-col gap-y-2'>
-            <Dialog open={editOpen} onOpenChange={setEditOpen}>
+            <Dialog open={editOpen} onOpenChange={handleEditOpen}>
               <DialogTrigger asChild>
                 <div className='px-5 py-4 bg-white rounded-lg border cursor-pointer hover:bg-gray-50'>
                   <div className='flex items-center justify-between'>
                     <p className='text-sm font-semibold'>Channel name</p>
-                    <p className='text-sm text-[#1264a3] hover:underline font-semibold'>Edit</p>
+                    {isAdmin && <p className='text-sm text-[#1264a3] hover:underline font-semibold'>Edit</p>}
                   </div>
                   <p className='text-sm'># {title}</p>
                 </div>
@@ -143,14 +152,18 @@ const Header = ({
                 </form>
               </DialogContent>
             </Dialog>
-            <button
-              className='flex items-center gap-x-2 py-4 px-5 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600'
-              onClick={handleDelete}
-              disabled={isRemovingChannel}
-            >
-              <TrashIcon className='size-4' />
-              <p className='text-sm font-semibold'>Delete channel</p>
-            </button>
+            {
+              isAdmin && (
+                <button
+                  className='flex items-center gap-x-2 py-4 px-5 bg-white rounded-lg cursor-pointer border hover:bg-gray-50 text-rose-600'
+                  onClick={handleDelete}
+                  disabled={isRemovingChannel}
+                >
+                  <TrashIcon className='size-4' />
+                  <p className='text-sm font-semibold'>Delete channel</p>
+                </button>
+              )
+            }
           </div>
         </DialogContent>
       </Dialog>
