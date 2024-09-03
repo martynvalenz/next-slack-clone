@@ -5,10 +5,13 @@ import { useChannelId } from "@/hooks/useChannelId"
 import { Loader2, TriangleAlert } from "lucide-react"
 import Header from "./Header"
 import ChatInput from "./ChatInput"
+import { useGetMessages } from "@/features/messages/api/use-get-messages"
 
 const WorkspaceChannelPage = () => {
   const channelId = useChannelId()
   const {data:channel,isLoading:channelLoading} = useGetChannel({id:channelId})
+  const {results} = useGetMessages({channelId})
+  console.log(results)
 
   if(channelLoading) {
     return (
@@ -32,7 +35,9 @@ const WorkspaceChannelPage = () => {
   return (
     <div className="flex flex-col h-full">
       <Header title={channel.name} />
-      <div className="flex-1"/>
+      <div className="flex-1">
+        {JSON.stringify(results)}
+      </div>
       <ChatInput placeholder={`Message # ${channel.name}`} />
     </div>
   )
