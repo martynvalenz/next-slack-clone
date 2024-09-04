@@ -8,7 +8,7 @@ interface ToolbarProps {
   isPending:boolean
   handleEdit:() => void
   handleThread:() => void
-  handleDelete:() => void
+  handleRemove:() => void
   handleReaction:(value:string) => void
   hideThreadButton?:boolean
 }
@@ -18,7 +18,7 @@ const Toolbar = ({
   isPending,
   handleEdit,
   handleThread,
-  handleDelete,
+  handleRemove,
   handleReaction,
   hideThreadButton
 }:ToolbarProps) => {
@@ -69,7 +69,7 @@ const Toolbar = ({
               <Button
                 variant="ghost"
                 size="iconSm"
-                onClick={handleDelete}
+                onClick={handleRemove}
               >
                 <Trash className="size-4" />
               </Button>
