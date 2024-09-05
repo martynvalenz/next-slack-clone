@@ -51,7 +51,7 @@ const Reactions = ({
       }
       <EmojiPopover 
         hint="Add reaction"
-        onEmojiSelect={(emoji) => onChange(emoji.native)}
+        onEmojiSelect={(emoji) => onChange(emoji)}
       >
         <button className="h-7 px-3 rounded-full bg-slate-200/30 border border-transparent hover:border-slate-500">
           <MdOutlineAddReaction className="size-4 text-slate-800" />

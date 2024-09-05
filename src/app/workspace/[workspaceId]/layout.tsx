@@ -41,7 +41,6 @@ const WorkspaceLayout = ({
           <ResizablePanel 
             defaultSize={20}
             minSize={11}
-            maxSize={20}
             className="bg-[#5e2e5f]"
           >
             <WorkspaceSidebar />
