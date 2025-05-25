@@ -1,36 +1,48 @@
-'use client'
+'use client';
 
-import { useGetChannels } from "@/features/channels/api/use-get-channels"
-import { useCreateChannelModal } from "@/features/channels/store/use-create-channel-modal"
-import { useCurrentMember } from "@/features/members/api/use-current-meber"
-import { useGetWorkspace } from "@/features/workspaces/api/use-get-workspace"
-import { useWorkspaceId } from "@/hooks/useWorkspaceId"
-import { Loader2, TriangleAlert } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { useEffect, useMemo } from "react"
+import { useGetChannels } from '@/features/channels/api/use-get-channels';
+import { useCreateChannelModal } from '@/features/channels/store/use-create-channel-modal';
+import { useCurrentMember } from '@/features/members/api/use-current-meber';
+import { useGetWorkspace } from '@/features/workspaces/api/use-get-workspace';
+import { useWorkspaceId } from '@/hooks/useWorkspaceId';
+import { Loader2, TriangleAlert } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 
 const WorkspacePage = () => {
-  const workspaceId = useWorkspaceId()
-  const router = useRouter()
-  const [open,setOpen] = useCreateChannelModal()
-  
-  const {data:member, isLoading:memberLoading} = useCurrentMember({workspaceId})
-  const {data:workspace, isLoading:workspaceLoading} = useGetWorkspace({id:workspaceId})
-  const {data:channels,isLoading:channelsLoading} = useGetChannels({workspaceId})
+  const workspaceId = useWorkspaceId();
+  const router = useRouter();
+  const [open, setOpen] = useCreateChannelModal();
 
-  const channelId = useMemo(() => channels?.[0]._id,[channels])
-  const isAdmin = useMemo(() => member?.role === 'admin',[member])
+  const { data: member, isLoading: memberLoading } = useCurrentMember(
+    { workspaceId }
+  );
+  const { data: workspace, isLoading: workspaceLoading } =
+    useGetWorkspace({ id: workspaceId });
+  const { data: channels, isLoading: channelsLoading } =
+    useGetChannels({ workspaceId });
+
+  const channelId = useMemo(() => channels?.[0]._id, [channels]);
+  const isAdmin = useMemo(() => member?.role === 'admin', [member]);
 
   useEffect(() => {
-    if(workspaceLoading || channelsLoading || memberLoading || !member || !workspace) return
+    if (
+      workspaceLoading ||
+      channelsLoading ||
+      memberLoading ||
+      !member ||
+      !workspace
+    )
+      return;
 
-    if(channelId) {
-      router.replace(`/workspace/${workspaceId}/channel/${channelId}`)
+    if (channelId) {
+      router.replace(
+        `/workspace/${workspaceId}/channel/${channelId}`
+      );
+    } else if (!open && isAdmin) {
+      setOpen(true);
     }
-    else if(!open && isAdmin) {
-      setOpen(true)
-    }
-  },[
+  }, [
     channelId,
     workspace,
     workspaceLoading,
@@ -41,34 +53,30 @@ const WorkspacePage = () => {
     workspaceId,
     member,
     memberLoading,
-    isAdmin
-  ])
+    isAdmin,
+  ]);
 
-  if(workspaceLoading || channelsLoading || memberLoading) {
+  if (workspaceLoading || channelsLoading || memberLoading) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <Loader2 className="size-10 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
-  if(!workspace || !member) {
+  if (!workspace || !member) {
     return (
       <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
         <TriangleAlert className="size-10 text-error" />
-        <h1 className="text-2xl font-bold">
-          Workspace not found
-        </h1>
+        <h1 className="text-2xl font-bold">Workspace not found</h1>
       </div>
-    )
+    );
   }
 
   <div className="h-full flex-1 flex items-center justify-center flex-col gap-2">
     <TriangleAlert className="size-10 text-error" />
-    <h1 className="text-2xl font-bold">
-      No channel found
-    </h1>
-  </div>
-}
+    <h1 className="text-2xl font-bold">No channel found</h1>
+  </div>;
+};
 
-export default WorkspacePage
+export default WorkspacePage;
